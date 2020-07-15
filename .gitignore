@@ -1,0 +1,5 @@
+#python
+*.pyc
+venv/
+.idea/
+__pycache__/

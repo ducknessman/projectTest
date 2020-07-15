@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/h-ui/css/H-ui.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/h-ui.admin/css/H-ui.admin.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/Hui-iconfont/1.0.8/iconfont.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/h-ui.admin/skin/default/skin.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/h-ui.admin/css/style.css')}}">
+    <meta charset="UTF-8">
+    <title>Show Case</title>
+    <style>
+    /*实现隐藏功能*/
+    .newsInfo:hover {
+        background: #eee;
+        color: #333;
+        z-index: 999;
+    }
+    .newsInfo {
+
+        position: relative;
+        z-index: 0;
+    }
+    .newsInfo span {
+
+        display: none;
+    }
+    .newsInfo:hover span {
+        display: block;
+        position: absolute;
+        min-width:400px;
+        top: 28px;
+        left:100px;
+        border: 1px solid #cccccc;
+        background: #C1CDC1;
+        color: black;
+        padding: 5px;
+        text-align: left;
+        overflow: hidden;
+    }
+    .newInfoTruncation {
+        width:120px;
+        white-space:nowrap;
+        word-break:keep-all;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l">
+            <a href="javascript:;" onclick="runningtask()" class="btn btn-secondary radius">
+                <i class="Hui-iconfont">&#xe64d;</i> 执行用例
+            </a>
+        </span>
+    </div>
+	<table class="table table-border table-bordered table-bg">
+		<thead>
+			<tr>
+				<th scope="col" colspan="11">测试用例展示</th>
+			</tr>
+			<tr class="text-c">
+				<th width="25"><input type="checkbox" name="" value=""></th>
+				<th>ID</th>
+				<th>用例编号</th>
+				<th>用例名称</th>
+                <th>用例描述</th>
+                <th>请求方式</th>
+                <th>请求地址</th>
+                <th>请求参数</th>
+                <th>录入人</th>
+                <th>预期结果</th>
+                <th>录入时间</th>
+			</tr>
+		</thead>
+		<tbody>
+		    {% for task in tasks %}
+			<tr class="text-c">
+				<td><input type="checkbox" value="{{loop.index0}}" name="smallBox" id="smallBox"></td>
+				<td>{{loop.index0}}</td>
+				<td>{{task['task_id']}}_{{task['task_son_id']}}</td>
+				<td>{{task['task_name']}}</td>
+                <td>{{task['task_description']}}</td>
+                <td>{{task['task_method']}}</td>
+                <td>{{task['task_url']}}</td>
+                <td>
+                    <a href="#" class="newsInfo" style="text-decoration:none">
+                        <div class="newInfoTruncation">{{task['task_data']}}</div>
+                        <span>{{task['task_data']}}</span>
+                    </a>
+                </td>
+                <td>{{task['task_auth']}}</td>
+                <td>
+                    <a href="#" class="newsInfo" style="text-decoration:none">
+                        <div class="newInfoTruncation">{{task['task_result']}}</div>
+                        <span>{{task['task_result']}}</span>
+                    </a>
+                </td>
+                <td>{{task['task_time']}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript" src="{{url_for('static',filename='js/jquery/1.9.1/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='js/layer/2.4/layer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='js/h-ui/js/H-ui.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='js/h-ui.admin/js/H-ui.admin.js')}}"></script> <!--/_footer 作为公共模版分离出去-->
+
+<script>
+    function runningtask() {
+        layer.confirm('请再次确认需要执行的用例',function (index) {
+            if($("input[name=smallBox]:checked").length==0){
+                alert('请必须填选一项！');
+            }
+            else {
+                var params="";
+                $("input[name=smallBox]:checked").each(function (index,element) {
+                    if (index == 0){
+                        params += "" + $(this).val();
+                    }else {
+                        params += "," + $(this).val();
+                    }
+                });
+                $.ajax({
+                    type:'POST',
+                    url:"{{ url_for('running_task') }}",
+                    dataType:'json',
+                    data:{
+                        id:params,
+                    },
+                    success:function (data) {
+                        layer.msg('执行成功！',{icon:1,time:1000});
+                        window.location.reload()
+                    },
+                    error:function (data) {
+                        console.log(data.msg);
+                    },
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>
