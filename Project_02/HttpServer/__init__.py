@@ -4,8 +4,8 @@
 # @Author  : Zhuxx
 
 from flask import Flask, render_template, session, request, redirect, url_for
-from HttpServer.views.account import account as account_blueprint
-from HttpServer.views.home import home as home_blueprint
+from Project_02.HttpServer.views.account import account as account_blueprint
+from Project_02.HttpServer.views.home import home as home_blueprint
 
 
 def HttpServerApp():

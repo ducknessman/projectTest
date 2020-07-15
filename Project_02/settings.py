@@ -5,7 +5,7 @@
 
 
 class BasicConfig:
-    BASEDIR = 'D:\python_project\server\HttpServer\\templates\\report' #存放文件目录路径
+    BASEDIR = 'E:\prthon_project\projectTest\Project_02\HttpServer\\templates\\report' #存放文件目录路径
     SECRET_KEY = "123456987"                    #session加密初始码
     USERINFO = {
         'wenni':'wenni123456',

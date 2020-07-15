@@ -4,7 +4,7 @@
 # @Author  : Zhuxx
 
 from flask import Blueprint, render_template, current_app, send_from_directory, request, jsonify,redirect,url_for,session
-from HttpServer.views.dingding import DDMsg
+from Project_02.HttpServer.views.dingding import DDMsg
 import os
 import time
 import csv
@@ -210,7 +210,8 @@ def show_data():
     js获取读取文件数据
     :return:
     '''
-    for key,value in scv_global_info.items():
+    auth = session['user']
+    for key,value in scv_global_info[auth].items():
         return jsonify(value)
 
 @home.route('/show_excel')
