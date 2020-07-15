@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Server</title>
+    <link rel="icon" href="{{ url_for('static',filename='img/favicon.ico') }}">
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='css/index.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-table.min.css" />
+    <script src="../static/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../static/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
+
+
+</head>
+<body>
+<div class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <div class="navbar-brand">
+                Report Server
+            </div>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('home.index') }}">首页</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('account.logout') }}">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="table-box" style="margin: 20px;">
+    <div class="row">
+        <a href="{{url_for('home.return_local')}}">返回根目录</a>
+    </div>
+    <div id="toolbar">
+        <button id="button" class="btn btn-default">新增一行</button>
+        <button id="getTableData" class="btn btn-default">提交数据</button>
+    </div>
+    <table id="table"></table>
+</div>
+
+
+<script type="text/javascript">
+    $(function() {
+    let $table = $('#table');
+    let $button = $('#button');
+    let $getTableData = $('#getTableData');
+
+    $button.click(function() {
+        $table.bootstrapTable('insertRow', {
+            index: 0,
+            row: {
+                test_id: '',
+                test_describe: '',
+                test_priorityh: '',
+                test_flag: '',
+                test_mothed: '',
+                path: '',
+                date: '',
+                expected_result: '',
+                actual_result: '',
+                test_result: ''
+            }
+        });
+    });
+
+    $table.bootstrapTable({
+        //url: 'data2.json',
+        url:"{{url_for('home.show_data')}}",
+        toolbar: '#toolbar',
+        clickEdit: true,
+        showToggle: true,
+        pagination: true,
+        showColumns: true,
+        showPaginationSwitch: true,
+        showRefresh: true,
+        //clickToSelect: true,
+        columns: [{
+            checkbox: true
+        }, {
+            field: 'test_id',
+            title: '用例编号'
+        }, {
+            field: 'test_describe',
+            title: '用例描述'
+        }, {
+            field: 'test_priorityh',
+            title: 'Test Priorityh'
+        }, {
+            field: 'test_flag',
+            title: 'Test Flag'
+        }, {
+            field: 'test_mothed',
+            title: 'Test Method'
+        }, {
+            field: 'path',
+            title: 'Test Path'
+        }, {
+            field: 'date',
+            title: 'Test Data'
+        }, {
+            field: 'expected_result',
+            title: 'Expected Result'
+        }, {
+            field: 'actual_result',
+            title: 'Actual Result'
+        }, {
+            field: 'test_result',
+            title: 'Test Result'
+        }, ],
+        /**
+         * @param {点击列的 field 名称} field
+         * @param {点击列的 value 值} value
+         * @param {点击列的整行数据} row
+         * @param {td 元素} $element
+         */
+        onClickCell: function(field, value, row, $element) {
+            $element.attr('contenteditable', true);
+            $element.blur(function() {
+                let index = $element.parent().data('index');
+                let tdValue = $element.html();
+
+                saveData(index, field, tdValue);
+            })
+        }
+    });
+
+    $getTableData.click(function() {
+        alert(JSON.stringify($table.bootstrapTable('getData')));
+        var value = JSON.stringify($table.bootstrapTable('getData'));
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST',"save_infos",true);
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        httpRequest.send(value);
+
+        httpRequest.onreadystatechange = function(){
+            if (httpRequest.status == 200) {
+                var json = httpRequest.responseText;
+                window.location.href = "{{url_for('home.index')}}";
+                console.log(json)
+            }
+        };
+    });
+
+    function saveData(index, field, value) {
+        $table.bootstrapTable('updateCell', {
+            index: index,
+            field: field,
+            value: value
+        })
+    }
+});
+</script>
+</body>
+</html>
