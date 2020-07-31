@@ -18,7 +18,7 @@
     2.2 响应式隐藏显示
   3. 基础CSS
     3.1 排版
-      3.1.1  标题
+      3.1_1  标题
       3.1.2  强调
       3.1.3  对齐
       3.1.4  定位
@@ -118,7 +118,7 @@
 ----------------------------------
 CSS写作注意事项：
   1. 页面编码规范
-    1.1. 统一使用 UTF-8 编码,用@charset "utf-8"指定页面编码。
+    1_1. 统一使用 UTF-8 编码,用@charset "utf-8"指定页面编码。
     1.2. 全局字体设置：
          windows 7系统：微软雅黑 Arial；
          windows XP及以下：新宋体，宋体，Arial
@@ -754,7 +754,7 @@ input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit
 }
 /*3.0 基础样式*/
 /*3.1 排版*/
-/*3.1.1 标题
+/*3.1_1 标题
 	Example：
 	<h1>h1. 大标题<small>小标题</small></h1>
     <h2>h2. 大标题<small>小标题</small></h2>
@@ -3409,7 +3409,7 @@ H-ui采用Font Awesome 3.2.1的整套图标，因为是图标字体，所以可�
     </ol>
   </div>
 </div>
-	<script type="text/javascript" src="lib/jquery.SuperSlide/2.1.1/jquery.SuperSlide.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.SuperSlide/2.1_1/jquery.SuperSlide.min.js"></script>
 	<script type="text/javascript">
 	$(function() {
 		jQuery("#slider-1 .slider").slide({mainCell:".bd ul",titCell:".hd li",trigger:"click",effect:"leftLoop",autoPlay:true,delayTime:700,interTime:3000,pnLoop:false,titOnClassName:"active"});
@@ -3722,7 +3722,7 @@ a.label:hover, a.label:focus, a.badge:hover, a.badge:focus{color: #fff;text-deco
 	//弹出层header区
 	//弹出层头部
 	.modal-header {padding: 9px 15px;border-bottom: 1px solid #eee; position:relative}
-	//关闭按钮，请调用4.1.1 按钮 .close
+	//关闭按钮，请调用4.1_1 按钮 .close
 	.modal-header .close{position:absolute; right:10px; top:10px}
 	//标题
 	.modal-header h3{margin:0; padding:10px 0; font-size:16px}

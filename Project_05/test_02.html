@@ -1,0 +1,82 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TreeSelect</title>
+
+    <script type="text/javascript" src="js/jquery-1.11.0.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="js/zTreeStyle.css"/>
+    <script type="text/javascript" src="js/jquery.ztree.all.js"></script>
+
+    <script type="text/javascript" src="js/tree-select.js"></script>
+</head>
+<body>
+    <div>
+        <input id="ts_input">
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        var data = getData();
+        // 一句话搞定
+        $("#ts_input").treeSelect(data);
+    });
+
+    function getData() {
+        // ajax get data
+        var data = [
+            {
+                "name": "江苏",
+                "pid": 0,
+                "id": -1,
+                "icon": "images/js.png"
+            },
+            {
+                "name": "浙江",
+                "pid": 0,
+                "id": -2,
+                "icon": "images/zj.png"
+            },
+            {
+                "name": "上海",
+                "pid": 0,
+                "id": -3,
+                "icon": "images/sh.png"
+            },
+            {
+                "name": "苏州",
+                "pid": -1,
+                "id": 1,
+                "icon": "images/sz.png"
+            },
+            {
+                "name": "无锡",
+                "pid": -1,
+                "id": 2,
+                "icon": "images/wx.png"
+            },
+            {
+                "name": "常州",
+                "pid": -1,
+                "id": 3,
+                "icon": "images/cz.png"
+            },
+            {
+                "name": "杭州",
+                "pid": -2,
+                "id": 4,
+                "icon": "images/hz.png"
+            },
+            {
+                "name": "宁波",
+                "pid": -2,
+                "id": 5,
+                "icon": "images/nb.png"
+            }
+        ];
+        return data;
+    }
+
+</script>

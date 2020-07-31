@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Case Platform</title>
+    <link rel="icon" href="{{ url_for('static',filename='img/favicon.ico') }}">
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='css/index.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+
+    <link rel="stylesheet" href="../static/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="../static/assets/common.css">
+    <style>
+        input {
+            height: 33px;
+            line-height: 33px;
+            padding: 0 7px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            margin-bottom: -2px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #009E94;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <div class="navbar-brand">
+                Test Case Platform
+            </div>
+        </div>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li><a class="nav navbar-nav navbar-right" data-toggle="modal" data-target="#myModal">上传文件</a></li>
+            <li><a href="{{ url_for('account.logout') }}">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    请选择所需上传的本地文件
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <input id='file' class="btn btn-info" name="upload_file" type="file">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id='upload' class="btn btn-primary ">上传</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <input type="text" class="input-text" style="width: 250px" placeholder="搜索的条件" id="search_key" name="search_key">
+        <button type="submit" class="but but-success" id="do_search" name="do_search">
+            搜索线索
+        </button>
+    </div>
+    {% if error_info %}
+    <p class="text-danger" id="error">{{ error_info }}</p>
+    {% endif %}
+</div>
+
+<div class="layui-container">
+    <br><br>
+    <div class="layui-btn-group">
+        <button class="layui-btn" id="btn-expand">全部展开</button>
+        <button class="layui-btn" id="btn-fold">全部折叠</button>
+    </div>
+    &nbsp;&nbsp;
+    <input id="edt-search" type="text" placeholder="输入关键字" style="width: 120px;">&nbsp;&nbsp;
+    <button class="layui-btn" id="btn-search">&nbsp;&nbsp;搜索&nbsp;&nbsp;</button>
+
+    <table id="auth-table" class="layui-table" lay-filter="auth-table"></table>
+</div>
+
+<script type="text/html" id="oper-col">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="look" >查看</a>
+</script>
+
+<script>
+    $('#upload').click(function () {
+        var upload_path = {{path|tojson|safe}};
+        var formData = new FormData($('#upload-form')[0]);
+        formData.append("upload_path", upload_path);
+        $.post({
+            url: '/upload',
+            dataType: 'json',
+            type: 'POST',
+            data: formData,
+            async: true,
+            cashe: false,
+            contentType: false,
+            processData: false,
+            success: function (returndata) {
+                if(returndata['code'] == 200){
+                    var info = returndata['info'];
+                    alert(info);
+                }
+            },
+            error: function (returndata) {
+                alert("上传失败！")
+            }
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    /*搜索*/
+    $(document).ready(function () {
+        $("#do_search").click(function(){
+         var key=$("#search_key").val();
+           location.href="{{url_for('home.search_info')}}?key="+key;
+        });
+    });
+</script>
+
+<script src="../static/assets/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../static/module/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: -1,
+            treeIdName: 'authorityId',
+            treePidName: 'parentId',
+            elem: '#auth-table',
+            url:"{{url_for('home.get_file_infos')}}",
+            page: false,
+            cols: [[
+                {type: 'numbers',title:'编号'},
+                {field: 'authorityName', minWidth: 300, title: '目录名称'},
+                {field: 'size', width: 150,title: '文件大小',align: 'center'},
+                {field: 'menuIcon', width: 100,title: '文件后缀',align: 'center'},
+                {field: 'authority', width: 150,title: '文件类型',align: 'center'},
+                {
+                    field: 'isMenu', width: 80, align: 'center', templet: function (d) {
+                        if (d.isMenu == 1) {
+                            return '<span class="layui-badge layui-bg-gray">文件</span>';
+                        }
+                        if (d.parentId == -1) {
+                            return '<span class="layui-badge layui-bg-blue">根目录</span>';
+                        } else {
+                            return '<span class="layui-badge-rim">文件夹</span>';
+                        }
+                    }, title: '类型'
+                },
+                {field:'createTime',width:150,title:'创建时间'},
+                {field:'isMenu',width:80,templet:function (d) {
+                    if (d.isMenu==1){
+                        table.on('tool(auth-table)',function (obj) {
+                            var data = obj.data;
+                            var layEvent = obj.event;
+                            if (layEvent === 'look'){
+                                location.href = "{{url_for('home.show_excel')}}?" +"path=" + data.menuUrl + "&filename=" + data.authorityName;
+                            }
+                        });
+                        return '<a class="layui-btn layui-btn-primary layui-btn-xs layui-bg-blue" lay-event="look" >查看</a>'
+                    } else {
+                        return ''
+                    }
+                    },title:'功能',align:'center'}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+
+        $('#btn-expand').click(function () {
+            treetable.expandAll('#auth-table');
+        });
+
+        $('#btn-fold').click(function () {
+            treetable.foldAll('#auth-table');
+        });
+
+        $('#btn-search').click(function () {
+            var keyword = $('#edt-search').val();
+            var searchCount = 0;
+            $('#auth-table').next('.treeTable').find('.layui-table-body tbody tr td').each(function () {
+                $(this).css('background-color', 'transparent');
+                var text = $(this).text();
+                if (keyword != '' && text.indexOf(keyword) >= 0) {
+                    $(this).css('background-color', 'rgba(250,230,160,0.5)');
+                    if (searchCount == 0) {
+                        treetable.expandAll('#auth-table');
+                        $('html,body').stop(true);
+                        $('html,body').animate({scrollTop: $(this).offset().top - 150}, 500);
+                    }
+                    searchCount++;
+                }
+            });
+            if (keyword == '') {
+                layer.msg("请输入搜索内容", {icon: 5});
+            } else if (searchCount == 0) {
+                layer.msg("没有匹配结果", {icon: 5});
+            }
+        });
+    });
+</script>
+</body>
+</html>
