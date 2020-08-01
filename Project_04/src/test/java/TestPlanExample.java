@@ -23,10 +23,10 @@ public class TestPlanExample {
 
             // 注册执行结果监听器
             // html测试报告生成
-            ZTestReportListener listener = new ZTestReportListener("D:\\java_project\\junitHtmlReport-master\\src\\main\\resources\\report.template");
+            ZTestReportListener listener = new ZTestReportListener("");//生成报告模板位置
             launcher.registerTestExecutionListeners(listener);
             launcher.execute(request);
-            listener.outputResult("D:\\java_project\\junitHtmlReport-master\\report");
+            listener.outputResult("");//生成报告存放位置
             // 报告看情况入库还是直接展示
 
         } catch (Exception e) {
