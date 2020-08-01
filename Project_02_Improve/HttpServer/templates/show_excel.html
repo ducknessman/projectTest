@@ -36,11 +36,12 @@
 
 <div class="table-box" style="margin: 20px;">
     <div class="row">
-        <a href="{{url_for('home.return_local')}}">返回根目录</a>
+        <a href="{{url_for('home.return_local')}}">返回目录</a>
     </div>
     <div id="toolbar">
         <button id="button" class="btn btn-default">新增一行</button>
         <button id="getTableData" class="btn btn-default">提交数据</button>
+        <button id="remove" class="btn btn-default">删除</button>
     </div>
     <table id="table"></table>
 </div>
@@ -51,18 +52,46 @@
     let $table = $('#table');
     let $button = $('#button');
     let $getTableData = $('#getTableData');
+    let $remove = $('#remove');
+
+    $remove.click(function () {
+        var idlist = $('#table').bootstrapTable('getAllSelections');
+        var check_value = [];
+        for (var i = 0; i < idlist.length; i++) {
+            check_value.push(idlist[i].test_id);
+        }
+        if (check_value.length == 0){
+            alert('请先选择要删除的记录!');
+            return;
+        } else {
+            alert("请再次确认你删除的用例标号:[" + check_value + "]");
+            $table.bootstrapTable('remove',{
+                    field: 'test_id',
+                    values: check_value
+                })
+        }
+    });
 
     $button.click(function() {
+        $('#tablelist').bootstrapTable('destroy');
+        var idlist = $('#table').bootstrapTable('getAllSelections');
+        var check_value = [];
+        for (var i = 0; i < idlist.length; i++) {
+            alert(i);
+            check_value.push(idlist[i].test_id);
+        }
         $table.bootstrapTable('insertRow', {
-            index: 0,
+            index: check_value[0],
             row: {
                 test_id: '',
+                test_summary:"",
                 test_describe: '',
                 test_priorityh: '',
                 test_flag: '',
                 test_mothed: '',
                 path: '',
-                date: '',
+                incoming_id:'',
+                data: '',
                 expected_result: '',
                 actual_result: '',
                 test_result: ''
@@ -87,6 +116,9 @@
             field: 'test_id',
             title: '用例编号'
         }, {
+            field:'test_summary',
+            title:'Test Summary'
+        },{
             field: 'test_describe',
             title: '用例描述'
         }, {
@@ -99,10 +131,13 @@
             field: 'test_mothed',
             title: 'Test Method'
         }, {
+            field: 'incoming_id',
+            title: 'Incoming ID'
+        },{
             field: 'path',
             title: 'Test Path'
         }, {
-            field: 'date',
+            field: 'data',
             title: 'Test Data'
         }, {
             field: 'expected_result',
@@ -125,7 +160,6 @@
             $element.blur(function() {
                 let index = $element.parent().data('index');
                 let tdValue = $element.html();
-
                 saveData(index, field, tdValue);
             })
         }

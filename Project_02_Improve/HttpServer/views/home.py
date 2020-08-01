@@ -159,11 +159,10 @@ class ReadFile:
         title,values = [],[]
         for index,value in enumerate(self.read_csv(filename)):
             if index == 0:
-                title = value
+                title = [i.lower().replace(" ","_") for i in value]
             else:
                 values.append(value)
         real_info = [dict(zip(title,use)) for use in values]
-        # print(real_info)
         return real_info
 
     def read_csv(self,filename):
@@ -260,12 +259,10 @@ def show_excel():
     path = request.args.get('path') if request.args.get('path') else ""
     filename = request.args.get('filename')
     auth = session['user']
-    print(auth)
     if path or path == '':
         base_dir = current_app.config['BASEDIR']
         real_path = os.path.join(base_dir,path,filename)
         info = ReadFile().deal_info(real_path)
-        # scv_global_info[real_path]=info
         scv_global_info.setdefault(auth,{})[real_path] = info
         return render_template('show_excel.html')
 
@@ -275,23 +272,26 @@ def save_infos():
     保存修改后的文件
     :return:
     '''
-    #model为文件title，如有变化可以放入setting，进行统一修改
-    model = 'test_id,test_describe,test_priorityh,test_flag,test_mothed,path,date,expected_result,actual_result,test_result'
+    model = current_app.config['TITLE']
     use_model = model.split(',')
     save_info = []
     auth = session['user']
+    temp_dict = {'Test Summary':'test_summary','Incoming_id':'incoming_id'}
     if request.method == "POST":
         infos = request.get_data()
         values = json.loads(infos)
         for value in values:
             temp = []
             for name in use_model:
-                temp.append(value[name])
+                if name in temp_dict:
+                    temp.append(value[temp_dict[name]])
+                else:
+                    temp.append(value[name])
             save_info.append(temp)
     save_info.insert(0,use_model)
-    for k,v in scv_global_info.items():
+    for k,v in scv_global_info[auth].items():
         ReadFile().write_scv(k,save_info)
-    scv_global_info.pop()
+        scv_global_info[auth][k].pop()
     return redirect(url_for('home.index'))
 
 @home.route('/return_local')

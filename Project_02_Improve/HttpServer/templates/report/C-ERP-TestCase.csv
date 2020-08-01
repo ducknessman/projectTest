@@ -5,7 +5,6 @@ test_id,Test Summary,test_describe,test_priorityh,test_flag,test_mothed,Incoming
     ""name"":""这是一个test仓库""
 
 }","""success"":true,""message"":"""",""code"":0"
-32,,,,,,,,,
 2,Erp Controller,增加仓库信息-传入id含空格-新增仓库成功,P1,,POST,,/smart/erp/addWareHouse,"{
    
     ""id"": 15 ,
