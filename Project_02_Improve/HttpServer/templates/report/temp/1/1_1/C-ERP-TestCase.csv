@@ -1,11 +1,11 @@
 test_id,Test Summary,test_describe,test_priorityh,test_flag,test_mothed,Incoming_id,path,data,expected_result
+111,1256987,,,,,,,,
 1,Erp Controller,增加仓库信息-传入正确的id、name-新增仓库成功,P1,,POST,,/smart/erp/addWareHouse,"{
    
     ""id"":14,
     ""name"":""这是一个test仓库""
 
 }","""success"":true,""message"":"""",""code"":0"
-32,,,,,,,,,
 2,Erp Controller,增加仓库信息-传入id含空格-新增仓库成功,P1,,POST,,/smart/erp/addWareHouse,"{
    
     ""id"": 15 ,

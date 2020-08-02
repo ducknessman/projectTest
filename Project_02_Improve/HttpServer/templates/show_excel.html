@@ -73,16 +73,9 @@
     });
 
     $button.click(function() {
-        $('#tablelist').bootstrapTable('destroy');
         var idlist = $('#table').bootstrapTable('getAllSelections');
         var check_value = [];
-        for (var i = 0; i < idlist.length; i++) {
-            alert(i);
-            check_value.push(idlist[i].test_id);
-        }
-        $table.bootstrapTable('insertRow', {
-            index: check_value[0],
-            row: {
+        var rows = {
                 test_id: '',
                 test_summary:"",
                 test_describe: '',
@@ -95,12 +88,18 @@
                 expected_result: '',
                 actual_result: '',
                 test_result: ''
-            }
+            };
+
+        for (var i = 0; i < idlist.length; i++) {
+            check_value.push(idlist[i].test_id);
+        }
+        $table.bootstrapTable('insertRow', {
+            index: check_value[0],
+            row: rows,
         });
     });
 
     $table.bootstrapTable({
-        //url: 'data2.json',
         url:"{{url_for('home.show_data')}}",
         toolbar: '#toolbar',
         clickEdit: true,
@@ -109,7 +108,7 @@
         showColumns: true,
         showPaginationSwitch: true,
         showRefresh: true,
-        //clickToSelect: true,
+        clickToSelect: true,
         columns: [{
             checkbox: true
         }, {

@@ -10,10 +10,11 @@ import time
 import csv
 import json
 import platform
+from collections import defaultdict
 
 home = Blueprint('home', __name__)
 
-scv_global_info = {}                 #全局数据
+scv_global_info = defaultdict(dict)                 #全局数据
 
 class DocumentReader:
     '''
@@ -195,50 +196,16 @@ def index():
     :param path_uri: 根路径
     :return:
     '''
-    return render_template('index.html', path='')
-
-
-@home.route('/download/<filename>')
-@home.route('/download/<path:path>/<filename>')
-def download(filename, path=None):
-    '''
-    下载文件
-    :param filename:文件名称
-    :param path: 文件路径
-    :return:
-    '''
-    if not path:
-        real_path = current_app.config['BASEDIR']
-    else:
-        real_path = os.path.join(current_app.config['BASEDIR'], path)
-    return send_from_directory(real_path, filename, mimetype='application/octet-stream')
-
-
-@home.route('/upload', methods=['GET', 'POST'])
-def upload():
-    '''
-    上传文件
-    :return:
-    '''
-    if request.method == 'GET':
-        return "is upload file ... "
-    else:
-        path = request.form.get('upload_path')
-        file = request.files['upload_file']
-        file_name = file.filename
-        base_dir = current_app.config['BASEDIR']
-        file.save(os.path.join(base_dir, path, file_name))
-        return jsonify({"code": 200, "info": "文件：%s 上传成功" % file_name})
-
+    return render_template('index.html', path='',error_info='')
 
 @home.errorhandler(500)
-def error(error):
+def error():
     '''
     错误信息页面
     :param error:错误信息
     :return:
     '''
-    return render_template('index.html', error_info="错误的路径...")
+    return render_template('index.html', error_info='哎呀，出错了。')
 
 @home.route('/show_data',methods=['GET','POST'])
 def show_data():
@@ -262,9 +229,13 @@ def show_excel():
     if path or path == '':
         base_dir = current_app.config['BASEDIR']
         real_path = os.path.join(base_dir,path,filename)
-        info = ReadFile().deal_info(real_path)
-        scv_global_info.setdefault(auth,{})[real_path] = info
-        return render_template('show_excel.html')
+        if scv_global_info[real_path]:
+            return render_template('index.html',error_info='{},正在使用该文档，请稍后在进行编辑。'.format(scv_global_info[real_path]),path='')
+        else:
+            info = ReadFile().deal_info(real_path)
+            scv_global_info.setdefault(auth,{})[real_path] = info
+            scv_global_info[real_path] = auth
+            return render_template('show_excel.html')
 
 @home.route('/save_infos',methods=['POST'])
 def save_infos():
@@ -292,6 +263,7 @@ def save_infos():
     for k,v in scv_global_info[auth].items():
         ReadFile().write_scv(k,save_info)
         scv_global_info[auth][k].pop()
+        scv_global_info.pop(k)
     return redirect(url_for('home.index'))
 
 @home.route('/return_local')
@@ -314,12 +286,7 @@ def search_info():
         base_dir = current_app.config['BASEDIR']
         read = ReadFile()
         path,msg = read.find_path(base_dir,key)
-        print(path,msg,sep='\n')
         # DDMsg(msg)                                                    #钉钉消息发送，需要可以放开注释
-        # path_uri = path if path else ""
-        # real_path = os.path.join(base_dir, path_uri).replace('\\', '/')
-        # file_reader = DocumentReader(real_path)
-        # dirs, files = file_reader.analysis_dir()
         return render_template('index.html',path='', error_info=msg)
 
 @home.route('/get_all_files',methods=['GET','POST'])
